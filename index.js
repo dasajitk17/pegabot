@@ -3,7 +3,8 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const amqp = require('amqplib');
-const { removeStopwords } = require('stopword')
+const { removeStopwords } = require('stopword');
+const { v4: uuidv4 } = require('uuid');
 
 // Serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
@@ -43,7 +44,7 @@ app.post('/send-message', async (req, res) => {
 
     // Create a JavaScript object with the desired structure
     const jsonMessage = {
-      uniqueid: 'uniqueid',
+      uniqueid: uuidv4(),
       message: message,
       contextid: keywords
     };
