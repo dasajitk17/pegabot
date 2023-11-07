@@ -56,7 +56,7 @@ app.post('/send-message', async (req, res) => {
     const channel = await connection.createChannel();
 
     await channel.assertQueue(queueName, { durable: false });
-    channel.sendToQueue(queueName, Buffer.from(jsonMessage));
+    channel.sendToQueue(queueName, Buffer.from(jsonString));
 
     chatHistory.push({ type: 'sent', message }); // Store sent message
 
