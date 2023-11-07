@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat</title>
+</head>
+<body>
+  <div id="chat">
+    <div id="messages"></div>
+    <input id="input" autocomplete="off" /><button id="sendButton">Send</button>
+  </div>
+  <div id="chatHistory">
+    <h2>Chat History</h2>
+    <ul id="historyMessages"></ul>
+  </div>
+  <script>
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('input');
+    const sendButton = document.getElementById('sendButton');
+    const historyMessages = document.getElementById('historyMessages');
+
+    sendButton.addEventListener('click', () => {
+      const message = input.value;
+      input.value = '';
+      sendMessage(message);
+    });
+
+    function sendMessage(message) {
+      fetch('/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Handle the response, e.g., display a confirmation message
+          console.log('Message sent successfully:', data.message);
+    
+          // Call the function to display chat history after a successful message is sent
+          const li = document.createElement('li');
+          li.textContent = `You: `+message;
+          historyMessages.appendChild(li);
+        })
+        .catch((error) => {
+          console.error('Error sending message:', error);
+        });
+  }
+
+    function clearMessages() {
+      const messages = document.getElementById('messages');
+      while (messages.firstChild) {
+        messages.removeChild(messages.firstChild);
+      }
+    }
+
+    function displayChatHistory() {
+      fetch('/chat-history')
+        .then((response) => response.json())
+        .then((chatHistory) => {
+          chatHistory.forEach((message) => {
+            const li = document.createElement('li');
+            li.textContent = message.type === 'sent' ? `You: ${message.message}` : `Received: ${message.message}`;
+            historyMessages.appendChild(li);
+          });
+        })
+        .catch((error) => {
+          console.error('Error retrieving chat history:', error);
+        });
+    }
+
+    // Call the function to display chat history when the page loads
+    displayChatHistory();
+  </script>
+</body>
+</html>
