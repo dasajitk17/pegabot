@@ -39,7 +39,7 @@ app.post('/send-message', async (req, res) => {
   try {
     const queueName = 'my-queue-name'; // Replace with the name of your queue
     const message = req.body.message;
-    const keywords = extractKeywordsFromQuestion(question);
+    const keywords = extractKeywordsFromQuestion(message);
     console.log(keywords);
 
     // Create a JavaScript object with the desired structure
