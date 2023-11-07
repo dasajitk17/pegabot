@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const amqp = require('amqplib');
+const { removeStopwords } = require('stopword')
 
 // Serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
@@ -37,12 +38,24 @@ app.post('/send-message', async (req, res) => {
   try {
     const queueName = 'my-queue-name'; // Replace with the name of your queue
     const message = req.body.message;
+    const keywords = extractKeywordsFromQuestion(question);
+    console.log(keywords);
 
+    // Create a JavaScript object with the desired structure
+    const jsonMessage = {
+      uniqueid: 'uniqueid',
+      message: message,
+      contextid: keywords
+    };
+
+    // Convert the JavaScript object to a JSON string
+    const jsonString = JSON.stringify(jsonMessage);
+    console.log(jsonString);
     const connection = await amqp.connect(rabbitMqUrl);
     const channel = await connection.createChannel();
 
     await channel.assertQueue(queueName, { durable: false });
-    channel.sendToQueue(queueName, Buffer.from(message));
+    channel.sendToQueue(queueName, Buffer.from(jsonMessage));
 
     chatHistory.push({ type: 'sent', message }); // Store sent message
 
@@ -76,6 +89,33 @@ app.get('/receive-message', async (req, res) => {
     res.status(500).send({ error: 'Error receiving message' });
   }
 });
+
+function extractKeywordsFromQuestion(question) {
+  // Implement your logic to extract keywords from the question here
+  // You can use libraries or custom logic to analyze the question text and extract relevant keywords.
+  // Example keywords
+  const originalKeywords = removeStopwords(question.split(' '));//['google', 'ceo'];
+  // Generate additional variations of keywords
+  const keywordVariations = generateKeywordVariations(originalKeywords);
+  // Combine the original keywords with variations
+  const allKeywords = [...originalKeywords, ...keywordVariations];
+  return allKeywords;
+}
+
+function generateKeywordVariations(originalKeywords) {
+  const keywordVariations = [];
+  // Generate combinations of keywords
+  for (let i = 0; i < originalKeywords.length; i++) {
+    for (let j = i + 1; j < originalKeywords.length; j++) {
+      // Combine two keywords into a variation
+      const variation = `${originalKeywords[i]} ${originalKeywords[j]}`;
+      keywordVariations.push(variation);
+    }
+  }
+
+  return keywordVariations;
+}
+
 
 // Endpoint to retrieve chat history
 app.get('/chat-history', (req, res) => {
