@@ -37,7 +37,7 @@ const chatHistory = []; // Array to store chat history
 
 app.post('/send-message', async (req, res) => {
   try {
-    const queueName = 'your-queue-name'; // Replace with the name of your queue
+    const queueName = 'my-queue-name'; // Replace with the name of your queue
     const message = req.body.message;
     const keywords = extractKeywordsFromQuestion(message);
     console.log(keywords);
