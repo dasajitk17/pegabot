@@ -45,7 +45,7 @@ app.post('/send-message', async (req, res) => {
     // Create a JavaScript object with the desired structure
     const jsonMessage = {
       uniqueid: uuidv4(),
-      message: message,
+      question: message,
       contextid: keywords
     };
 
