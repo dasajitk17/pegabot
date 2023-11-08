@@ -129,12 +129,13 @@ function generateKeywordVariations(originalKeywords) {
 
   return keywordVariations;
 }
-*/
+
 
 // Endpoint to retrieve chat history
 app.get('/chat-history', (req, res) => {
   res.status(200).send(chatHistory);
 });
+*/
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
