@@ -48,6 +48,7 @@ setupRabbitMQConnection();
 
 // Wrap the message consumption logic in an async function
 async function consumeMessages() {
+  console.log(`running inside consumeMessages`);
   const queueName = 'my-queue-name'; // Replace with the name of your queue
 
   // Continuously consume messages with a 1-second delay
@@ -65,7 +66,7 @@ async function consumeMessages() {
     } catch (error) {
       console.error('Error consuming message:', error);
     }
-  }, 1000); // 1000 milliseconds (1 second)
+  }, 2000); // 1000 milliseconds (1 second)
 }
 
 // Call the consumeMessages function to start consuming messages
