@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 const rabbitMqUrl = process.env.AMQP_URL; // Replace with your RabbitMQ server
 let channel; // We'll use a single channel for sending and receiving messages
-
+const connection = amqp.connect(rabbitMqUrl);
 const chatHistory = []; // Array to store chat history
 
 (async () => {
