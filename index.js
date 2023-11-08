@@ -27,7 +27,7 @@ async function setupRabbitMQConnection() {
     console.log(`5`);
 
     // Consume messages from the queue
-    channel.consume(queueName, (message) => {
+    /*channel.consume(queueName, (message) => {
       if (message !== null) {
         const messageContent = message.content.toString();
         console.log(`Received message: ${messageContent}`);
@@ -36,7 +36,7 @@ async function setupRabbitMQConnection() {
         // Acknowledge the message to remove it from the queue
         channel.ack(message);
       }
-    });
+    });*/
 
     console.log('RabbitMQ connection and channel are set up successfully');
   } catch (error) {
@@ -45,6 +45,32 @@ async function setupRabbitMQConnection() {
 }
 
 setupRabbitMQConnection();
+
+// Wrap the message consumption logic in an async function
+async function consumeMessages() {
+  const queueName = 'my-queue-name'; // Replace with the name of your queue
+
+  // Continuously consume messages with a 1-second delay
+  const consumeInterval = setInterval(async () => {
+    try {
+      const message = await channel.get(queueName, { noAck: false });
+      if (message) {
+        const messageContent = message.content.toString();
+        console.log(`Received message: ${messageContent}`);
+        chatHistory.push({ type: 'received', message: messageContent });
+
+        // Acknowledge the message to remove it from the queue
+        channel.ack(message);
+      }
+    } catch (error) {
+      console.error('Error consuming message:', error);
+    }
+  }, 1000); // 1000 milliseconds (1 second)
+}
+
+// Call the consumeMessages function to start consuming messages
+consumeMessages();
+
 
 app.post('/send-message', async (req, res) => {
   try {
