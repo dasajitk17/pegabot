@@ -45,7 +45,7 @@ async function setupRabbitMQConnection() {
 }
 
 setupRabbitMQConnection();
-
+/*
 app.post('/send-message', async (req, res) => {
   try {
     const queueName = 'your-queue-name'; // Replace with the name of your queue
@@ -129,7 +129,7 @@ function generateKeywordVariations(originalKeywords) {
 
   return keywordVariations;
 }
-
+*/
 
 // Endpoint to retrieve chat history
 app.get('/chat-history', (req, res) => {
