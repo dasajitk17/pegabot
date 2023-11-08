@@ -136,6 +136,13 @@ app.get('/chat-history', (req, res) => {
   res.status(200).send(chatHistory);
 });
 
+setupRabbitMQConnection().then(() => {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+});
+
 /*
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
