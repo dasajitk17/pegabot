@@ -69,17 +69,19 @@
         });
     }
 
-    // Call the function to display chat history when the page loads
-    displayChatHistory();
+    
 
     async function consumeMessages() {
       const consumeInterval = setInterval(async () => {
         try {
           const response = await fetch('/receive-message');
+          historyMessages.innerHTML = "";
+          // Call the function to display chat history when the page loads
+          displayChatHistory();
         } catch (error) {
           console.error('Error retrieving message:', error);
         }
-      }, 29000); // 1000 milliseconds (1 second)
+      }, 5000); // 1000 milliseconds (1 second)
     }
 
     // Call the consumeMessages function to start consuming messages
