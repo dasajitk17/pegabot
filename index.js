@@ -41,12 +41,14 @@ app.post('/send-message', async (req, res) => {
     const message = req.body.message;
     const keywords = extractKeywordsFromQuestion(message);
     console.log(keywords);
+    const resultString = '"' + keywords.join('","') + '"';
+    console.log(resultString);
 
     // Create a JavaScript object with the desired structure
     const jsonMessage = {
       uniqueid: uuidv4(),
       question: message,
-      contextid: JSON.stringify(keywords)
+      contextid: resultString
     };
 
     // Convert the JavaScript object to a JSON string
