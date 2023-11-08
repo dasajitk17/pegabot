@@ -75,7 +75,7 @@
       const consumeInterval = setInterval(async () => {
         try {
           const response = await fetch('/receive-message');
-          historyMessages.innerHTML = "";
+          //historyMessages.innerHTML = "";
           // Call the function to display chat history when the page loads
           displayChatHistory();
         } catch (error) {
