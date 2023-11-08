@@ -6,61 +6,52 @@ const amqp = require('amqplib');
 const { removeStopwords } = require('stopword');
 const { v4: uuidv4 } = require('uuid');
 
-// Serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
-const rabbitMqUrl = process.env.AMQP_URL; // Replace with your RabbitMQ server
-let channel; // We'll use a single channel for sending and receiving messages
+const rabbitMqUrl = process.env.AMQP_URL;
+let channel; // Reuse a single channel for sending and receiving messages
 
-const chatHistory = []; // Array to store chat history
+const chatHistory = [];
 
-(async () => {
-  const connection = await amqp.connect(rabbitMqUrl);
-  channel = await connection.createChannel();
-  console.log(`Async fn ran`);
-  const queueName = 'my-queue-name'; // Replace with the name of your queue
+async function setupRabbitMQConnection() {
+  try {
+    const connection = await amqp.connect(rabbitMqUrl);
+    channel = await connection.createChannel();
 
-  // Consume messages from the queue
-  await channel.assertQueue(queueName, { durable: false });
-  channel.consume(queueName, (message) => {
-    if (message !== null) {
-      const messageContent = message.content.toString();
-      console.log(`Received message: ${messageContent}`);
-      chatHistory.push({ type: 'received', message: messageContent }); // Store received message
+    const queueName = 'my-queue-name';
+    await channel.assertQueue(queueName, { durable: false });
 
-      // Acknowledge the message to remove it from the queue
-      channel.ack(message);
-    }
-  });
-})();
+    console.log('RabbitMQ connection and channel are set up successfully');
+  } catch (error) {
+    console.error('Error setting up RabbitMQ connection:', error);
+  }
+}
+
+setupRabbitMQConnection();
 
 app.post('/send-message', async (req, res) => {
   try {
-    const queueName = 'your-queue-name'; // Replace with the name of your queue
+    const queueName = 'your-queue-name';
     const message = req.body.message;
     const keywords = extractKeywordsFromQuestion(message);
     console.log(keywords);
     const resultString = '"' + keywords.join('","') + '"';
     console.log(resultString);
 
-    // Create a JavaScript object with the desired structure
     const jsonMessage = {
       uniqueid: uuidv4(),
       question: message,
-      contextid: resultString
+      contextid: resultString,
     };
 
-    // Convert the JavaScript object to a JSON string
     const jsonString = JSON.stringify(jsonMessage);
     console.log(jsonString);
-    const connection = await amqp.connect(rabbitMqUrl);
-    const channel = await connection.createChannel();
 
     await channel.assertQueue(queueName, { durable: false });
     channel.sendToQueue(queueName, Buffer.from(jsonString));
 
-    chatHistory.push({ type: 'sent', message }); // Store sent message
+    chatHistory.push({ type: 'sent', message });
 
     console.log(`Message sent to ${queueName}: ${message}`);
 
@@ -73,16 +64,13 @@ app.post('/send-message', async (req, res) => {
 
 app.get('/receive-message', async (req, res) => {
   try {
-    const queueName = 'my-queue-name'; // Replace with the name of your queue
+    const queueName = 'my-queue-name';
 
-    const connection = await amqp.connect(rabbitMqUrl);
-    const channel = await connection.createChannel();
-    
     const { message } = await channel.get(queueName, { noAck: true });
 
     if (message) {
       const messageContent = message.content.toString();
-      chatHistory.push({ type: 'received', message: messageContent }); // Store received message
+      chatHistory.push({ type: 'received', message: messageContent });
       res.status(200).send({ message: messageContent });
     } else {
       res.status(204).send({ message: 'No messages in the queue' });
@@ -129,3 +117,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+
