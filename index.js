@@ -15,7 +15,7 @@ let channel; // We'll use a single channel for sending and receiving messages
 
 const chatHistory = []; // Array to store chat history
 
-async function consumeAndProcessMessages(){
+function consumeAndProcessMessages(){
   try{
     const connection = await amqp.connect(rabbitMqUrl);
     channel = await connection.createChannel();
