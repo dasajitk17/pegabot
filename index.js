@@ -15,6 +15,7 @@ let channel; // Reuse a single channel for sending and receiving messages
 const chatHistory = [];
 
 async function setupRabbitMQConnection() {
+  console.log('inside setupRabbitMQConnection');
   try {
     const connection = await amqp.connect(rabbitMqUrl);
     channel = await connection.createChannel();
