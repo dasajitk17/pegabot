@@ -46,7 +46,7 @@ app.post('/send-message', async (req, res) => {
     const jsonMessage = {
       uniqueid: uuidv4(),
       question: message,
-      contextid: keywords
+      contextid: JSON.stringify(keywords)
     };
 
     // Convert the JavaScript object to a JSON string
