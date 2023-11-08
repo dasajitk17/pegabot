@@ -17,13 +17,13 @@ const chatHistory = []; // Array to store chat history
 
 function consumeAndProcessMessages(){
   try{
-    const connection = await amqp.connect(rabbitMqUrl);
-    channel = await connection.createChannel();
+    const connection = amqp.connect(rabbitMqUrl);
+    channel = connection.createChannel();
   
     const queueName = 'my-queue-name'; // Replace with the name of your queue
   
     // Consume messages from the queue
-    await channel.assertQueue(queueName, { durable: false });
+    channel.assertQueue(queueName, { durable: false });
     channel.consume(queueName, (message) => {
       if (message !== null) {
         const messageContent = message.content.toString();
