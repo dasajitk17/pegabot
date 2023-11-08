@@ -45,7 +45,7 @@ async function setupRabbitMQConnection() {
 }
 
 setupRabbitMQConnection();
-/*
+
 app.post('/send-message', async (req, res) => {
   try {
     const queueName = 'your-queue-name'; // Replace with the name of your queue
@@ -136,7 +136,7 @@ app.get('/chat-history', (req, res) => {
   res.status(200).send(chatHistory);
 });
 
-
+/*
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
