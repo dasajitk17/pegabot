@@ -11,15 +11,11 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 const rabbitMqUrl = process.env.AMQP_URL; // Replace with your RabbitMQ server
-let channel; // We'll use a single channel for sending and receiving messages
 const connection = amqp.connect(rabbitMqUrl);
+let channel = connection.createChannel(); // We'll use a single channel for sending and receiving messages
+
 const chatHistory = []; // Array to store chat history
 
-(async () => {
-  const connection = await amqp.connect(rabbitMqUrl);
-  channel = await connection.createChannel();
-  console.log(`Async fn ran`);
-})();
 
 app.post('/send-message', async (req, res) => {
   try {
@@ -41,7 +37,7 @@ app.post('/send-message', async (req, res) => {
     const jsonString = JSON.stringify(jsonMessage);
     console.log(jsonString);
     //const connection = await amqp.connect(rabbitMqUrl);
-    const channel = await connection.createChannel();
+    //const channel = await connection.createChannel();
 
     await channel.assertQueue(queueName, { durable: false });
     channel.sendToQueue(queueName, Buffer.from(jsonString));
@@ -62,7 +58,7 @@ app.get('/receive-message', async (req, res) => {
     const queueName = 'my-queue-name'; // Replace with the name of your queue
 
     //const connection = await amqp.connect(rabbitMqUrl);
-    const channel = await connection.createChannel();
+    //const channel = await connection.createChannel();
     
     const { message } = await channel.get(queueName, { noAck: true });
 
